@@ -3,14 +3,14 @@
 - Compulsory
 - Optional (working on SmartPlayer & TimeKeeper classes)
 
-Console Ouput for RandomPlayer:
+Console Output for RandomPlayer:
 
     In total there are 16 tokens.
-    Player2 is in the game. The next players is Player3
+    Player2 is in the game. The next player is Player3
     Player2 is waiting for his turn
-    Player1 is in the game. The next players is Player2
+    Player1 is in the game. The next player is Player2
     Player1 is waiting for his turn
-    Player3 is in the game. The next players is Player1
+    Player3 is in the game. The next player is Player1
     Player3 is waiting for his turn
     Player1: it's my turn. There are 16 tokens left
     Player1 has taken the token: 3. There are 15 tokens left.
