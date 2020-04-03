@@ -7,6 +7,7 @@ import compulsory.Token;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
 import static java.lang.Thread.sleep;
 
 /**
@@ -35,11 +36,11 @@ public class SmartPlayer extends Player {
         }
         int numberOfTokensLeft = game.getBoard().getTokens().size();
 
-        if (numberOfTokensLeft == 0 | game.isOver()) {
+        if (numberOfTokensLeft == 0 || game.isOver()) {
             return false;
         }
 
-        System.out.println(name + ": I have received permission to take my turn. " +
+        System.out.println(name + ": it's my turn. " +
                 "There are " + numberOfTokensLeft + " tokens left.");
         try {
             sleep(100);
@@ -51,25 +52,17 @@ public class SmartPlayer extends Player {
             return false;
         }
 
-
         Token chosenToken;
-
         double chance = Math.random();
-
-        boolean attack = false;
-        if (chance < 0.66) {
-            attack = true;
-        }
-
         int tokenVal;
-        if (attack) {
+        //There are 3 players, 0.66 chances for one player
+        if (chance < 0.66) {
             tokenVal = getBestTokenVal(tokens, 2);
         } else {
-            tokenVal = getBestBlockTokenVal();
+            tokenVal = getBestTokenVal();
         }
 
         if (tokenVal != -1) {
-
             int index = 0;
             for (Token token : game.getBoard().getTokens()) {
                 if (token.getNumber() == tokenVal) {
@@ -80,8 +73,8 @@ public class SmartPlayer extends Player {
 
             chosenToken = getTokenFromBoard(index);
         } else {
-            if (attack) {
-                tokenVal = getBestBlockTokenVal();
+            if (chance < 0.66) {
+                tokenVal = getBestTokenVal();
             } else {
                 tokenVal = getBestTokenVal(tokens, 2);
             }
@@ -100,9 +93,8 @@ public class SmartPlayer extends Player {
                 chosenToken = getTokenFromBoard((int) (Math.random() * game.getBoard().getTokens().size()));
             }
         }
-
         System.out.println("Player " + name + " has taken the token " + chosenToken
-                + ", " + game.getBoard().getTokens().size() + " tokens left.");
+                                + ", " + game.getBoard().getTokens().size() + " tokens left.");
         setInactive();
         System.out.println("The next player is " + next.getName());
         next.setActive();
@@ -111,29 +103,23 @@ public class SmartPlayer extends Player {
 
 
     private int getBestTokenVal(List<Token> givenTokens, int consideredMoves) {
-        int maxPossibleScore = computeScore(givenTokens);
-
+        int maximumScore = computeScore(givenTokens);
         int[] frequencies = new int[totalTokens];
-
+        int[] isAvailable = new int[totalTokens];
+        List<Integer> bestOptions = new ArrayList<>();
         for (Token token : givenTokens) {
             frequencies[token.getNumber()]++;
         }
-
-        int[] isAvailable = new int[totalTokens];
-
         for (Token token : game.getBoard().getTokens()) {
             isAvailable[token.getNumber()]++;
         }
-
-        List<Integer> bestOptions = new ArrayList<>();
-
-        for (int ratio = 1; ratio < totalTokens; ratio++) {
+        for (int index = 1; index < totalTokens; index++) {
             for (int start = 0; start < totalTokens; start++) {
-                int ratioScore = 0;
+                int score = 0;
                 int futureMoves = 0;
                 List<Integer> currentOptions = new ArrayList<>();
 
-                for (int tokenVal = start; tokenVal < totalTokens; tokenVal += ratio) {
+                for (int tokenVal = start; tokenVal < totalTokens; tokenVal += index) {
                     if (frequencies[tokenVal] == 0) {
                         if (isAvailable[tokenVal] == 1) {
                             futureMoves++;
@@ -142,14 +128,12 @@ public class SmartPlayer extends Player {
                         } else {
                             break;
                         }
-
                         currentOptions.add(tokenVal);
                     }
-                    ratioScore++;
+                    score++;
                 }
-
-                if (maxPossibleScore < ratioScore) {
-                    maxPossibleScore = ratioScore;
+                if (maximumScore < score) {
+                    maximumScore = score;
                     bestOptions = currentOptions;
                 }
             }
@@ -164,20 +148,17 @@ public class SmartPlayer extends Player {
     }
 
 
-    private int getBestBlockTokenVal() {
-        List<Player> others = new ArrayList<>();
-
+    private int getBestTokenVal() {
+        List<Player> players = new ArrayList<>();
+        int tokenValue = -1;
         for (Player player : game.getPlayers()) {
             if (this == player) {
                 continue;
             }
-            others.add(player);
+            players.add(player);
         }
-
-        others.sort(Comparator.comparingInt(Player::computeScore));
-
-        int tokenValue = -1;
-        for (Player player : others) {
+        players.sort(Comparator.comparingInt(Player::computeScore));
+        for (Player player : players) {
             tokenValue = getBestTokenVal(player.getTokens(), 1);
             if (tokenValue != -1) {
                 break;
