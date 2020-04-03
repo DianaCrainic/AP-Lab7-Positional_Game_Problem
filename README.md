@@ -1,6 +1,6 @@
 ## Positional Game
 
-- Compulsory
+- Compulsory (all tasks done)
 - Optional (working on SmartPlayer & TimeKeeper classes)
 
 Console Output for RandomPlayer:
