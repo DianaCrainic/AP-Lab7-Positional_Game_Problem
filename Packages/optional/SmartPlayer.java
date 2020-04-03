@@ -9,7 +9,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import static java.lang.Thread.sleep;
-
+ 
 /**
  * SmartPlayer class:
  * A "smart" player should try to extend its largest arithmetic progression,

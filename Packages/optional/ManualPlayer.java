@@ -8,7 +8,6 @@ import java.util.Scanner;
 
 import static java.lang.Thread.sleep;
 
-
 /**
  * ManualPlayer class
  * A "manual" player will use the keyboard
