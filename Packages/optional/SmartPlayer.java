@@ -9,7 +9,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import static java.lang.Thread.sleep;
- 
+
 /**
  * SmartPlayer class:
  * A "smart" player should try to extend its largest arithmetic progression,
@@ -26,14 +26,7 @@ public class SmartPlayer extends Player {
 
     @Override
     public boolean play() {
-        while (!active & game.getBoard().getTokens().size() != 0) {
-            System.out.println(name + " is waiting for his turn");
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        connectToGame();
         int numberOfTokensLeft = game.getBoard().getTokens().size();
 
         if (numberOfTokensLeft == 0 || game.isOver()) {
@@ -53,6 +46,24 @@ public class SmartPlayer extends Player {
         }
 
         Token chosenToken;
+        chosenToken = getChosenTokenForPlayer();
+        displayCurrentScore(chosenToken);
+        return true;
+    }
+
+    private void connectToGame() {
+        while (!active & game.getBoard().getTokens().size() != 0) {
+            System.out.println(name + " is waiting for his turn");
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private Token getChosenTokenForPlayer() {
+        Token chosenToken;
         double chance = Math.random();
         int tokenVal;
         //There are 3 players, 0.66 chances for one player
@@ -61,7 +72,12 @@ public class SmartPlayer extends Player {
         } else {
             tokenVal = getBestTokenVal();
         }
+        chosenToken = getTokenForPlayer(tokenVal, chance);
+        return chosenToken;
+    }
 
+    private Token getTokenForPlayer(int tokenVal,double chance){
+        Token chosenToken;
         if (tokenVal != -1) {
             int index = 0;
             for (Token token : game.getBoard().getTokens()) {
@@ -70,7 +86,6 @@ public class SmartPlayer extends Player {
                 }
                 index++;
             }
-
             chosenToken = getTokenFromBoard(index);
         } else {
             if (chance < 0.66) {
@@ -78,7 +93,6 @@ public class SmartPlayer extends Player {
             } else {
                 tokenVal = getBestTokenVal(tokens, 2);
             }
-
             if (tokenVal != -1) {
                 int index = 0;
                 for (Token token : game.getBoard().getTokens()) {
@@ -87,18 +101,20 @@ public class SmartPlayer extends Player {
                     }
                     index++;
                 }
-
                 chosenToken = getTokenFromBoard(index);
             } else {
                 chosenToken = getTokenFromBoard((int) (Math.random() * game.getBoard().getTokens().size()));
             }
         }
+        return chosenToken;
+    }
+
+    private void displayCurrentScore(Token chosenToken) {
         System.out.println("Player " + name + " has taken the token " + chosenToken
-                                + ", " + game.getBoard().getTokens().size() + " tokens left.");
+                + ", " + game.getBoard().getTokens().size() + " tokens left.");
         setInactive();
         System.out.println("The next player is " + next.getName());
         next.setActive();
-        return true;
     }
 
 
@@ -118,7 +134,6 @@ public class SmartPlayer extends Player {
                 int score = 0;
                 int futureMoves = 0;
                 List<Integer> currentOptions = new ArrayList<>();
-
                 for (int tokenVal = start; tokenVal < totalTokens; tokenVal += index) {
                     if (frequencies[tokenVal] == 0) {
                         if (isAvailable[tokenVal] == 1) {

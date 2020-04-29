@@ -11,10 +11,9 @@ import static java.lang.Thread.sleep;
  * if it exceeds a certain time limit.
  */
 public class TimeKeeper implements Runnable {
-
-    Game game;
-    int totalTime;
-    int remainingTime;
+    private Game game;
+    private int totalTime;
+    private int remainingTime;
 
     @Override
     public void run() {

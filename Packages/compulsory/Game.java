@@ -72,15 +72,16 @@ public class Game {
                 ex.printStackTrace();
             }
         }
+        displayScore();
+    }
 
+    public void displayScore() {
         for (Player player : players) {
             player.getTokens().sort(Comparator.comparingInt(Token::getNumber));
             System.out.println(player.getName() + " has " + player.getTokens().size()
                     + " tokens: " + player.getTokens().toString());
         }
     }
-
-
 
     public boolean isOver() {
         return over;
